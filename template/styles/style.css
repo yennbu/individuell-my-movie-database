@@ -28,6 +28,7 @@ body {
     max-width: 1180px;
     margin: 0 auto;
 }
+
 .center {
     margin: 0 auto;
 }
@@ -81,4 +82,104 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+.popular-title {
+    color: #F5C518;
+}
+
+.card-container__movie {
+    color: white;
+    margin-left: 1rem;
+}
+
+/* Styling för desktop-läge */
+
+.desktop {
+    display: none;
+}
+
+/* Styling trailers */
+
+.movie-trailer {
+    border: none;
+}
+
+
+/* Styling topplistan */
+.movie-list {
+    padding-bottom: 5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.movie-item {
+    width: 13rem;
+    background-color: gray;
+    margin: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.movie-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px 0 lightgray;
+}
+
+.movie-title {
+    color: #F5C518;
+    font-size: 1.7rem;
+}
+
+.movie-poster {
+    width: 100%;
+}
+
+.trailer-link {
+    text-decoration: none;
+    color: white;
+}
+
+.trailer-link:hover {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.star {
+    width: 55px;
+}
+
+.award {
+    color: white;
+}
+
+#cardContainerr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.favourite {
+    width: 30px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+}
+
+@media screen and (min-width: 800px) {
+    .desktop {
+        display: block;
+    }
+
+    .mobile {
+        display: none;
+    }
+
 }

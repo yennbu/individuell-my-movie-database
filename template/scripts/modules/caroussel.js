@@ -1,5 +1,7 @@
+import { fetchTopMovies } from "./api.js";
+import { shuffleArray } from "../shuffle.js";
 
-export function renderTrailers(movie, num) {
+function renderTrailers(movie, num) {
     const iFrameRef = document.createElement(`iframe`);
     iFrameRef.classList.add(`trailers__video`, `trailers__video-${num}`);
     iFrameRef.src = movie.Trailer_link;
@@ -7,7 +9,7 @@ export function renderTrailers(movie, num) {
 
     const trailerList = document.querySelectorAll(`.trailers__video`);
     const trailerArray = Array.from(trailerList);
-    
+
     document.querySelectorAll(`.trailers__arrow`).forEach(arrow => {
         arrow.addEventListener(`click`, (event) => {
             changeTrailer(event, trailerList, trailerArray);
@@ -37,3 +39,16 @@ function changeTrailer(event, trailerList, trailerArray) {
     });
 }
 
+function renderAllTrailers(trailers) {
+    trailers = shuffleArray(trailers);
+    trailers.splice(5);
+    trailers.forEach((movie, index) => {
+        renderTrailers(movie, index + 1);
+    });
+}
+
+export async function loadAndRenderTrailers() {
+    fetchTopMovies().then(movies => {
+        renderAllTrailers(movies);
+    });
+}
