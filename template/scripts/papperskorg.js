@@ -1,6 +1,108 @@
 
 
 /*
+if (window.location.pathname.includes("movie.html")) {
+    (async () => {
+        let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
+
+        try {
+            let movie4 = await fetchMovieInfo(imdb); // Vänta på fetchMovieInfo
+            console.log(movie4);
+
+            const movieInfo = getElement('.movie-information');
+            movieInfo.innerHTML = `
+                <div>
+                    <h3 class='movie-title'>${movie4.Title}</h3>
+                    <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
+                    <img class='movie-poster' src="${movie4.Poster}" alt="${movie4.Title}"> 
+                    <p class="actors">${movie4.Actors}</p>
+                    <p class="director">${movie4.Director}</p>
+                    <p class="plot">${movie4.Plot}</p>
+                    <p><a class='trailer-link' href="${movie4.Trailer_link}" target="_blank">Se trailer</a></p>
+                    <button class='button'>Spara som favorit</button>
+                </div>
+            `;
+        } catch (error) {
+            console.error("Fel vid hämtning av filmdata:", error);
+        }
+    })();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const button = document.querySelector('.button');
+    console.log(button); // Kontrollera att elementet hittas
+
+    if (button) {
+        button.addEventListener('click', function() {
+            console.log('Button clicked!');
+        });
+    } else {
+        console.log('Button element not found');
+    }
+});
+
+console.log('test')
+
+}; */
+
+
+/*
+
+if (window.location.pathname.includes("movie.html")) {
+   let movie4= (async () => {
+        let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
+
+        try {
+            let movie3 = await fetchMovieInfo(imdb);
+            console.log(movie3);
+        } catch (error) {
+            console.error("Fel vid hämtning av filmdata:", error);
+        }
+    })();
+
+    const movieInfo = getElement('.movie-information')
+    movieInfo.innerHTML=`
+            <h3 class='movie-title'>${movie4.Title}</h3>
+            <img class='favourite' src="res/icons/white-medium-star.svg" alt=""> 
+            <img class='movie-poster' src="${movie4.Poster}" alt="${movie4.Title}"> 
+            <p><a class='trailer-link' href="${movie4.Trailer_link}" target="_blank">Se trailer</a></p>
+            <p class='hide'>${movie4.imdbID}</p>
+        `
+
+}*/
+
+/* if (imdb) {
+        console.log("Hämtat IMDb ID:", imdb);
+    } else {
+        console.log("Inget IMDb-ID hittades i localStorage.");
+    }*/
+
+/*
+
+   const movieCard = getElement('.movie-item')
+    movieCard.addEventListener('click', getImdbID)
+
+    function getImdbID(){
+
+        let ID = event.target.movieCard
+        
+        localStorage.setItem('imdbID', ID)
+        
+    } */
+
+
+    //event.target - spara imdbID:t i localStorage - byt sida och hämta informationen igen
+
+if (window.location.pathname.includes("movie.html")) {
+    let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
+    
+    let movie3 = fetchMovieInfo(imdb)
+
+    console.log(movie3)
+    
+}
+
+
+/*
 async function shuffleTrailers() {
     let trailers = await fetchTopMovies();
     if (trailers.length === 0) return;
