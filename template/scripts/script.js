@@ -17,6 +17,7 @@ import { fetchMovieInfo, fetchTopMovies, fetchMovie } from "./modules/api.js";
 import { fetchAndDisplayTopMovies } from "./displayMovies.js";
 import { loadAndRenderTrailers } from "./modules/caroussel.js";
 import { getElement } from "./utils/domUtils.js";
+import { movieCard } from "./components/movieCard.js";
 
 //Sökfunktion
 const input = getElement('#searchInput');
@@ -87,10 +88,12 @@ if (window.location.pathname.includes("search.html")) {
             localStorage.setItem('imdbID', imdbID);
             console.log(`Sparade IMDb ID: ${imdbID}`);
 
-            window.location.href = "movie.html";
+            window.location.href = "movie.html"; //Den här skulle behöva brytas ut så att den inte aktiveras när man klickar på stjärnan.
+            return imdbID;
 
         } else {
             console.log('IMDb ID saknas!');
+            return null;
         }
     }
 }
@@ -150,24 +153,90 @@ if (window.location.pathname.includes("movie.html")) {
 
 }
 
+import { dispMovies } from "./displayMovies.js";
+
 if (window.location.pathname.includes("favorites.html")) {
-    //   localStorage.getItem()
-}
+
+
+    let displayFavMovies = localStorage.getItem('favMovies1');
+    let dispArray = JSON.parse(displayFavMovies);
+
+    console.log(dispArray)
+
+    let movieInfoArr = []
+
+
+    }
+    
+    
+  //  fetchMovieInfo(dispArray)
 
 // Lägg till event listener
 const stars = document.querySelectorAll('.favourite');
+//let favMovies = []
 
 stars.forEach(star => {
     star.addEventListener('click', function () {
-        event.stopPropagation()
-        if (this.src.includes('star-outline.svg')) {
+       
+       let imdbID = this.parentElement.dataset.imdbid
+
+       if (this.src.includes('star-outline.svg')) {
             this.src = 'res/icons/star.svg';
             console.log('Star clicked');
-           // localStorage.setItem('favMovie', filmtiteln);  // Spara film i localStorage
+           
+            let test1 = localStorage.getItem('favMovies1');
+            let favMovieArr1 = JSON.parse(test1)
+
+            if (favMovieArr1 == null) {
+                favMovieArr1 = []
+            }
+    
+            favMovieArr1.push(imdbID)
+
+            console.log(this.parentElement.dataset.imdbid)
+            const favMovieJSON = JSON.stringify(favMovieArr1)
+            localStorage.setItem('favMovies1', favMovieJSON);  // Spara film i localStorage
         } else {
             this.src = 'res/icons/star-outline.svg';
             console.log('Star unclicked');
-            // localStorage.removeItem('favMovie'); // Ta bort objekt från localStorage
+
+            let test = localStorage.getItem('favMovies1');
+            let favMovieArr = JSON.parse(test)
+            console.log(favMovieArr)
+
+            const index = favMovieArr.indexOf(imdbID);
+            if (index > -1){
+                favMovieArr.splice(index, 1)
+            }
+
+            console.log(favMovieArr)
+            
+            localStorage.removeItem('favMovies1'); // Ta bort objekt från localStorage
+            
+            const removedMovieJSON = JSON.stringify(favMovieArr)
+            localStorage.setItem('favMovies1', removedMovieJSON)
+
+            
         }
     });
 });
+
+/*
+
+        const clickedCard = event.currentTarget; // Hämta det klickade elementet
+        const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
+
+
+
+
+const clickedCard = event.currentTarget; // Hämta det klickade elementet
+            const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
+
+            if (imdbID) {
+                localStorage.setItem('imdbID', imdbID);
+                console.log(`Sparade IMDb ID: ${imdbID}`);
+
+
+            } else {
+                console.log('IMDb ID saknas!');
+            }*/
