@@ -134,8 +134,9 @@ p {
 
 .movie-item {
     width: 13rem;
-    background-color: gray;
+    background-color: #1A1A1A;
     margin: 0.3rem;
+    margin-bottom: 1rem;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -221,14 +222,10 @@ p {
     color: white;
 }
 
-.poster-title {
-    display: flex;
+.poster-title{
+    margin-bottom: 1rem;
 }
 
-.title-actor-director{
-    margin-left: 1rem;
-
-}
 
 @media screen and (min-width: 800px) {
     .desktop {
@@ -250,4 +247,12 @@ p {
         font-family: "Poppins", serif;
     }
 
+    .poster-title {
+        display: flex;
+    }
+
+    .title-actor-director{
+        margin-left: 1rem;
+
+    }
 }

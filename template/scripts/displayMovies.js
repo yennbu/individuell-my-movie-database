@@ -16,26 +16,33 @@ export async function fetchAndDisplaySearchedMovies() {
 
     let movies2 = await fetchMovie(searchedMovies)
 
-    movies2.forEach(movie => {
-        //console.log("Filmobjekt:", movie); 
+    dispMovies(movies2)
+}
 
-        const cards = getElement('#cardContainerr');
+export function dispMovies(movies2) {
+    
 
-        const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
-        li.classList.add('movie-item'); // Lägg till en CSS-klass
-        li.setAttribute('data-imdbid', movie.imdbID);
-        
-        li.innerHTML = `
-            <h3 class='movie-title'>${movie.Title}</h3>
-            <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
-            <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
-            <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
-        `;
+movies2.forEach(movie => {
+    //console.log("Filmobjekt:", movie); 
 
-        //if (movie.poster == saknas){lägg till bilden ur mappen}
+    const cards = getElement('#cardContainerr');
 
-        cards.appendChild(li);
-    });
+    const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
+    li.classList.add('movie-item'); // Lägg till en CSS-klass
+    li.setAttribute('data-imdbid', movie.imdbID);
+    
+    li.innerHTML = `
+        <h3 class='movie-title'>${movie.Title}</h3>
+        <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
+        <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
+        <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
+    `;
+
+    //if (movie.poster == saknas){lägg till bilden ur mappen}
+
+    cards.appendChild(li);
+});
+
 }
 
 export function addMovieItemEventListeners() {
