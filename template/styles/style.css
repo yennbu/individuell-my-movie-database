@@ -1,6 +1,7 @@
 @import url('./carousel.css');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+
 /* Variables */
 :root {
     --header-grey: #121212;
@@ -21,6 +22,22 @@
 body {
     background-color: var(--primary-bg);
     max-width: 100%;
+}
+
+h3 {
+    font-family: "Poppins", serif;
+    font-weight: 700;
+}
+
+h4 {
+    font-family: "Poppins", serif;
+    font-weight: 600;
+}
+
+p {
+    font-family: "Poppins", serif;
+    font-weight: 300;
+    font-size: 0.9rem;
 }
 
 /* Utils */
@@ -118,10 +135,10 @@ body {
 .movie-item {
     width: 13rem;
     background-color: gray;
-    margin: 0.5rem;
+    margin: 0.3rem;
+    text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     position: relative;
 }
@@ -133,16 +150,24 @@ body {
 
 .movie-title {
     color: #F5C518;
-    font-size: 1.7rem;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .movie-poster {
     width: 100%;
+    margin-bottom: 0.5rem;
 }
 
 .trailer-link {
     text-decoration: none;
     color: white;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    text-align: center;
+    transform: translateX(-50%);
 }
 
 .trailer-link:hover {
@@ -166,7 +191,6 @@ body {
 }
 
 .favourite {
-
     width: 30px;
     position: absolute;
     top: 0;
@@ -175,9 +199,10 @@ body {
 }
 
 .movie-information {
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: 10%;
+    margin-right: 10%;
     margin-top: 1rem;
+    margin-bottom: 2rem;
     background-color: #1A1A1A;
     padding: 1rem;
     position: relative;
@@ -196,6 +221,15 @@ body {
     color: white;
 }
 
+.poster-title {
+    display: flex;
+}
+
+.title-actor-director{
+    margin-left: 1rem;
+
+}
+
 @media screen and (min-width: 800px) {
     .desktop {
         display: block;
@@ -203,6 +237,17 @@ body {
 
     .mobile {
         display: none;
+    }
+
+    /* Information om en film */
+    .movie-information {
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+
+    /**/
+    .header__fav-btn {
+        font-family: "Poppins", serif;
     }
 
 }

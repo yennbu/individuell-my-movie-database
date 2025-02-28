@@ -14,32 +14,18 @@ if (window.location.pathname === '/' || window.location.pathname === '/template/
 }
 
 import { fetchMovieInfo, fetchTopMovies, fetchMovie } from "./modules/api.js";
-import { displayMovies } from "./displayMovies.js";
+import { fetchAndDisplayTopMovies } from "./displayMovies.js";
 import { loadAndRenderTrailers } from "./modules/caroussel.js";
 import { getElement } from "./utils/domUtils.js";
 
-let topMovies = await fetchTopMovies();
-
+//Sökfunktion
 const input = getElement('#searchInput');
 const searchButton = getElement('#searchBtn');
 
-
-if (window.location.pathname.includes("index.html")) {
-    loadAndRenderTrailers();
-    displayMovies(topMovies);
-
-// Sökningen är en funktion för att kunna triggas av en "eventListener"
-//Jag vill att det här leder till att användare 
-//1. Förflyttas till söksidan (search.html) check!!
-//2. Får upp resultat baserat på vad man har sökt på
 function handleSearch(event) {
     event.preventDefault(); // Förhindrar att formuläret skickas
-    
     localStorage.setItem("search", input.value)//Spara ner userInput i localStorage
-
     window.location.href = "search.html";
-
-    //console.log(userInput); // Skriver ut användarens input i konsolen  
 }
 
 // Jag vill att sökrutan ska fungera både när användaren klickar på sökknappen och trycker på enter
@@ -50,14 +36,19 @@ input.addEventListener('keypress', (event) => {
     }
 });
 
+if (window.location.pathname.includes("index.html")) {
+    loadAndRenderTrailers();
+    fetchAndDisplayTopMovies()
 
 }
-    
-    if (window.location.pathname.includes("search.html")) {
-    
+
+if (window.location.pathname.includes("search.html")) {
+
+
     let searchedMovies = localStorage.getItem("search")
 
     let movies2 = await fetchMovie(searchedMovies)
+
 
     movies2.forEach(movie => {
         //console.log("Filmobjekt:", movie); 
@@ -67,13 +58,12 @@ input.addEventListener('keypress', (event) => {
         const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
         li.classList.add('movie-item'); // Lägg till en CSS-klass
         li.setAttribute('data-imdbid', movie.imdbID);
-        
+
         li.innerHTML = `
-            <h3 class='movie-title'>${movie.Title}</h3>
             <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
             <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
+            <h3 class='movie-title'>${movie.Title}</h3>
             <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
-            <p class='hide'>${movie.imdbID}</p>
         `;
 
         cards.appendChild(li);
@@ -81,73 +71,103 @@ input.addEventListener('keypress', (event) => {
 
 
     // Hämta alla movie-items
-const movieCards = document.querySelectorAll('.movie-item');
+    const movieCards = document.querySelectorAll('.movie-item');
 
-// Lägg till en event listener på varje kort
-movieCards.forEach(card => {
-    card.addEventListener('click', getImdbID);
-});
+    // Lägg till en event listener på varje kort
+    movieCards.forEach(card => {
+        card.addEventListener('click', getImdbID);
+    });
 
-// Hämta och spara imdbID i localStorage
-function getImdbID(event) {
-    const clickedCard = event.currentTarget; // Hämta det klickade elementet
-    const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
-    
-    if (imdbID) {
-        localStorage.setItem('imdbID', imdbID);
-        console.log(`Sparade IMDb ID: ${imdbID}`);
+    // Hämta och spara imdbID i localStorage
+    function getImdbID(event) {
+        const clickedCard = event.currentTarget; // Hämta det klickade elementet
+        const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
 
-        window.location.href = "movie.html";
+        if (imdbID) {
+            localStorage.setItem('imdbID', imdbID);
+            console.log(`Sparade IMDb ID: ${imdbID}`);
 
-    } else {
-        console.log('IMDb ID saknas!');
+            window.location.href = "movie.html";
+
+        } else {
+            console.log('IMDb ID saknas!');
+        }
     }
 }
-} 
 
 if (window.location.pathname.includes("movie.html")) {
-(async () => {
-    let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
+    (async () => {
+        let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
 
-    try {
-        let movie4 = await fetchMovieInfo(imdb); // Vänta på fetchMovieInfo
-        console.log(movie4);
+        try {
+            let movie4 = await fetchMovieInfo(imdb); // Vänta på fetchMovieInfo
+            console.log(movie4);
 
-        const movieInfo = document.querySelector('.movie-information'); // Använd korrekt metod för att välja element
-        movieInfo.innerHTML = `
+            const movieInfo = document.querySelector('.movie-information'); // Använd korrekt metod för att välja element
+            movieInfo.innerHTML = `
             <div>
-                <h3 class='movie-title'>${movie4.Title}</h3>
                 <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
-                <img class='movie-poster' src="${movie4.Poster}" alt="${movie4.Title}"> 
-                <p class="actors">${movie4.Actors}</p>
-                <p class="director">${movie4.Director}</p>
+                <div class='poster-title'>
+                    <img class='movie-poster' src="${movie4.Poster}" alt="${movie4.Title}">
+                    <div class='title-actor-director'>
+                        <h3 class='movie-title'>${movie4.Title}</h3>
+                        <h4 class="actors">Actors: ${movie4.Actors}</h4>
+                        <h4 class="director">Director: ${movie4.Director}</h4>
+                    </div>
+                </div>
+                
                 <p class="plot">${movie4.Plot}</p>
-                <p><a class='trailer-link' href="${movie4.Trailer_link}" target="_blank">Se trailer</a></p>
             </div>
         `;
 
-        // Lägg till event listener efter att knappen har skapats
-        const star = document.querySelector('.favourite');
-        if (star) {
-            star.addEventListener('click', function(){
-                console.log('Star clicked')
-                
-                if (this.src.includes('star-outline.svg')) {
-                this.src='res/icons/star.svg'
+
+            const star = document.querySelector('.favourite');
+            if (star) {
+                star.addEventListener('click', function () {
+
+                    if (this.src.includes('star-outline.svg')) {
+                        this.src = 'res/icons/star.svg'
+                        console.log('Star clicked')
+                        // localStorage.getItem('favMovie', )
+                    }
+
+                    else {
+                        this.src = 'res/icons/star-outline.svg'
+                        console.log('Star unclicked')
+                        //ta bort objekt från localStorage
+                    }
+
+                })
             }
 
-            else {
-                this.src='res/icons/star-outline.svg'
-            }
-            
-            } )
+
+        } catch (error) {
+            console.error("Fel vid hämtning av filmdata:", error);
         }
+    })();
 
-    } catch (error) {
-        console.error("Fel vid hämtning av filmdata:", error);
-    }
-})();
-
-console.log('test');
+    console.log('test');
 
 }
+
+if (window.location.pathname.includes("favorites.html")) {
+    //   localStorage.getItem()
+}
+
+// Lägg till event listener
+const stars = document.querySelectorAll('.favourite');
+
+stars.forEach(star => {
+    star.addEventListener('click', function () {
+        event.stopPropagation()
+        if (this.src.includes('star-outline.svg')) {
+            this.src = 'res/icons/star.svg';
+            console.log('Star clicked');
+           // localStorage.setItem('favMovie', filmtiteln);  // Spara film i localStorage
+        } else {
+            this.src = 'res/icons/star-outline.svg';
+            console.log('Star unclicked');
+            // localStorage.removeItem('favMovie'); // Ta bort objekt från localStorage
+        }
+    });
+});
