@@ -13,29 +13,26 @@ if (window.location.pathname === '/' || window.location.pathname === '/template/
 
 }
 
+//Importerade funktioner
 import { fetchMovieInfo, fetchTopMovies, fetchMovie } from "./modules/api.js";
 import { fetchAndDisplayTopMovies } from "./displayMovies.js";
 import { loadAndRenderTrailers } from "./modules/caroussel.js";
 import { getElement } from "./utils/domUtils.js";
 import { movieCard } from "./components/movieCard.js";
+import { setupSearchListeners } from "./search.js";
+import { dispMovies } from "./displayMovies.js";
+import { addMovieItemEventListeners } from "./eventHandlers.js";
+import { displayMovieInfo } from "./displayMovies.js";
+import { addMovieInformationEventListeners } from "./eventHandlers.js";
+//import { handleFavoriteClick } from "./displayMovies.js";
 
-//Sökfunktion
-const input = getElement('#searchInput');
-const searchButton = getElement('#searchBtn');
+//Variabler
 
-function handleSearch(event) {
-    event.preventDefault(); // Förhindrar att formuläret skickas
-    localStorage.setItem("search", input.value)//Spara ner userInput i localStorage
-    window.location.href = "search.html";
-}
+const searchButton = getElement("#searchBtn");
+const inputField = getElement("#searchInput");
 
-// Jag vill att sökrutan ska fungera både när användaren klickar på sökknappen och trycker på enter
-searchButton.addEventListener('click', handleSearch);
-input.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        handleSearch(event);
-    }
-});
+setupSearchListeners(searchButton, inputField);
+
 
 if (window.location.pathname.includes("index.html")) {
     loadAndRenderTrailers();
@@ -44,137 +41,85 @@ if (window.location.pathname.includes("index.html")) {
 }
 
 if (window.location.pathname.includes("search.html")) {
+    let searchedMovies = localStorage.getItem("search");
+    let movies2 = await fetchMovie(searchedMovies);
 
+    dispMovies(movies2);
 
-    let searchedMovies = localStorage.getItem("search")
-
-    let movies2 = await fetchMovie(searchedMovies)
-
-
-    movies2.forEach(movie => {
-        //console.log("Filmobjekt:", movie); 
-
-        const cards = getElement('#cardContainerr');
-
-        const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
-        li.classList.add('movie-item'); // Lägg till en CSS-klass
-        li.setAttribute('data-imdbid', movie.imdbID);
-
-        li.innerHTML = `
-            <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
-            <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
-            <h3 class='movie-title'>${movie.Title}</h3>
-            <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
-        `;
-
-        cards.appendChild(li);
-    });
-
-
-    // Hämta alla movie-items
-    const movieCards = document.querySelectorAll('.movie-item');
-
-    // Lägg till en event listener på varje kort
-    movieCards.forEach(card => {
-        card.addEventListener('click', getImdbID);
-    });
-
-    // Hämta och spara imdbID i localStorage
-    function getImdbID(event) {
-        const clickedCard = event.currentTarget; // Hämta det klickade elementet
-        const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
-
-        if (imdbID) {
-            localStorage.setItem('imdbID', imdbID);
-            console.log(`Sparade IMDb ID: ${imdbID}`);
-
-            window.location.href = "movie.html"; //Den här skulle behöva brytas ut så att den inte aktiveras när man klickar på stjärnan.
-            return imdbID;
-
-        } else {
-            console.log('IMDb ID saknas!');
-            return null;
+    if (movies2.length === 0) {
+    
+        const cardContainer = document.querySelector('.card-container');
+        
+        if (cardContainer) {
+            cardContainer.innerHTML = `
+                <p class="error-message">Ojdå! Inga filmer hittades.</p>
+                <p class="error-message">Testa att söka igen.</p>`;
         }
     }
+
+    // Hämta alla movie-items
+    const movieCards = getElement('.movie-item');
+
+    addMovieItemEventListeners()
+
 }
 
 if (window.location.pathname.includes("movie.html")) {
-    (async () => {
-        let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
+    displayMovieInfo() 
+    const stars1 = document.querySelectorAll('.favourite');
+    console.log(stars1 + "scipt.js")
+    //handleFavoriteClick(stars1)
 
-        try {
-            let movie4 = await fetchMovieInfo(imdb); // Vänta på fetchMovieInfo
-            console.log(movie4);
-
-            const movieInfo = document.querySelector('.movie-information'); // Använd korrekt metod för att välja element
-            movieInfo.innerHTML = `
-            <div>
-                <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
-                <div class='poster-title'>
-                    <img class='movie-poster' src="${movie4.Poster}" alt="${movie4.Title}">
-                    <div class='title-actor-director'>
-                        <h3 class='movie-title'>${movie4.Title}</h3>
-                        <h4 class="actors">Actors: ${movie4.Actors}</h4>
-                        <h4 class="director">Director: ${movie4.Director}</h4>
-                    </div>
-                </div>
-                
-                <p class="plot">${movie4.Plot}</p>
-            </div>
-        `;
-
-
-            const star = document.querySelector('.favourite');
-            if (star) {
-                star.addEventListener('click', function () {
-
-                    if (this.src.includes('star-outline.svg')) {
-                        this.src = 'res/icons/star.svg'
-                        console.log('Star clicked')
-                        // localStorage.getItem('favMovie', )
-                    }
-
-                    else {
-                        this.src = 'res/icons/star-outline.svg'
-                        console.log('Star unclicked')
-                        //ta bort objekt från localStorage
-                    }
-
-                })
-            }
-
-
-        } catch (error) {
-            console.error("Fel vid hämtning av filmdata:", error);
-        }
-    })();
-
-    console.log('test');
-
+    addMovieInformationEventListeners()
 }
 
-import { dispMovies } from "./displayMovies.js";
 
 if (window.location.pathname.includes("favorites.html")) {
 
+    let favouriteMarkedMovies = localStorage.getItem('favMovies1');
+    let favMoviesArray = JSON.parse(favouriteMarkedMovies);
 
-    let displayFavMovies = localStorage.getItem('favMovies1');
-    let dispArray = JSON.parse(displayFavMovies);
+    console.log(favouriteMarkedMovies)
+    console.log(favMoviesArray)
 
-    console.log(dispArray)
+    let fullMovieInfo = []
 
-    let movieInfoArr = []
+    let showMovie = null//await fetchMovieInfo(fullMovieInfo)
 
 
+    let promises = favMoviesArray.map(async imdbID => {
+        let showMovie = await fetchMovieInfo(imdbID);
+        return showMovie;
+    });
+    
+    Promise.all(promises).then(results => {
+        fullMovieInfo = results;
+        dispMovies(fullMovieInfo);
+    });
+
+
+    /*
+    favMoviesArray.forEach(async imdbID => {
+        showMovie = await fetchMovieInfo(imdbID)
+        fullMovieInfo.push(showMovie)
+
+    });
+    
+    console.log('Här kommer:')
+    console.log(fullMovieInfo)
+    //console.log('hallå' + showMovie)
+
+    dispMovies(fullMovieInfo)
+*/
     }
     
     
   //  fetchMovieInfo(dispArray)
 
 // Lägg till event listener
-const stars = document.querySelectorAll('.favourite');
 //let favMovies = []
 
+/*
 stars.forEach(star => {
     star.addEventListener('click', function () {
        
@@ -219,15 +164,13 @@ stars.forEach(star => {
             
         }
     });
-});
+}); */
+
 
 /*
 
         const clickedCard = event.currentTarget; // Hämta det klickade elementet
         const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
-
-
-
 
 const clickedCard = event.currentTarget; // Hämta det klickade elementet
             const imdbID = clickedCard.dataset.imdbid; // Hämta imdbID från dataset
@@ -239,4 +182,4 @@ const clickedCard = event.currentTarget; // Hämta det klickade elementet
 
             } else {
                 console.log('IMDb ID saknas!');
-            }*/
+            }  */
