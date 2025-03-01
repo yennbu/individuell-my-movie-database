@@ -44,7 +44,7 @@ export async function fetchTopMovies() {
     }
 }*/
 
-
+//döp om till fetchMovieSearch
 export async function fetchMovie(title) {
     try {
         const response = await fetch(`http://www.omdbapi.com/?apikey=be8612e6&s=${title}*`); 
@@ -90,13 +90,13 @@ export async function fetchMovieInfo(imdbID) {
     
             if (!data || data.Response === "False") {
                 console.error("Inga filmer hittades:", data);
-                return null; // Returnera null om inget hittas
+                return []; // Returnera null om inget hittas
             }
     
             //console.log(data); // Kontrollera den mottagna filmens data
             return data; // Returnera filmobjektet
         } catch (error) {
             console.error("Fel vid hämtning av filmer:", error);
-            return null;
+            return [];
         }
     }

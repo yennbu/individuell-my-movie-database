@@ -161,6 +161,11 @@ p {
     margin-bottom: 0.5rem;
 }
 
+.movie-info-poster {
+    height: 100px;
+    width: 70px;
+}
+
 .trailer-link {
     text-decoration: none;
     color: white;
@@ -226,6 +231,10 @@ p {
     margin-bottom: 1rem;
 }
 
+.error-message {
+    color: #F5C518;
+    font-size: 2rem;
+}
 
 @media screen and (min-width: 800px) {
     .desktop {

@@ -1,8 +1,8 @@
-import { fetchMovie, fetchTopMovies } from "./modules/api.js";
+import { fetchMovie, fetchTopMovies, fetchMovieInfo } from "./modules/api.js";
 import { shuffleArray } from "./shuffle.js";
 import { movieCard } from "./components/movieCard.js";
 import { getElement } from "./utils/domUtils.js";
-
+import { handleFavoriteClick } from "./eventHandlers.js";
 
 export async function fetchAndDisplayTopMovies() {
         let movies = await fetchTopMovies();
@@ -11,19 +11,11 @@ export async function fetchAndDisplayTopMovies() {
         movieCard(movies); // Skicka de blandade filmerna till displayMovies
     }
 
-export async function fetchAndDisplaySearchedMovies() {
-    let searchedMovies = localStorage.getItem("search")
-
-    let movies2 = await fetchMovie(searchedMovies)
-
-    dispMovies(movies2)
-}
-
 export function dispMovies(movies2) {
-    
-
+    console.log('tja!')
+    console.log(movies2)
 movies2.forEach(movie => {
-    //console.log("Filmobjekt:", movie); 
+    console.log('tjabba!'); 
 
     const cards = getElement('#cardContainerr');
 
@@ -41,47 +33,55 @@ movies2.forEach(movie => {
     //if (movie.poster == saknas){lägg till bilden ur mappen}
 
     cards.appendChild(li);
+
+    
 });
 
+
+console.log('tjabba3!'); 
+
+        const starss = document.querySelectorAll('.favourite');
+        console.log(starss)
+        handleFavoriteClick(starss)
+    
+
 }
 
-export function addMovieItemEventListeners() {
-    const movieCards = document.querySelectorAll('.movie-item');
-    movieCards.forEach(card => {
-        card.addEventListener('click', testFunction);
-    });
-}
+export async function displayMovieInfo() {
+    let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
 
-function testFunction() {
-    console.log('klick!');
-}
+    if (!imdb) {
+        console.error("Inget IMDb-ID hittades i localStorage.");
+        return;
+    }
 
+    try {
+        let movie4 = await fetchMovieInfo(imdb); // Vänta på fetchMovieInfo
+        console.log(movie4);
 
+        const movieInfo = getElement('.movie-information');
 
-/*
-import { getElement } from "./utils/domUtils.js";
-export async function displayMovies(movies) {
-   // let movies = await fetchTopMovies();
-    if (movies.length === 0) return;
+        movieInfo.setAttribute('data-imdbid', movie4.imdbID);
 
-    shuffleArray(movies); //Jag vill bryta ut den här, så att den här funktionen kan användas även för OMDB-API:t
-    movies.splice(20); 
-
-    const movieList = getElement('.movie-list');
-    movieList.innerHTML = ''; // Rensa listan, så att den inte fylls på - Behövs den när .splice() används?
-
-    movies.forEach(movie => {
-        //console.log("Filmobjekt:", movie); 
-
-        const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
-        li.classList.add('movie-item'); // Lägg till en CSS-klass
-        
-        li.innerHTML = `
-            <h3 class='movie-title'>${movie.Title}</h3>
-            <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
-            <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
+        movieInfo.innerHTML = `
+            
+                <h3 class='movie-title'>${movie4.Title}</h3>
+                <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
+                <img class='movie-info-poster' src="${movie4.Poster}" alt="${movie4.Title}"> 
+                <h4 class="actors">${movie4.Actors}</h4>
+                <h4 class="director">${movie4.Director}</h4>
+                <p class="plot">${movie4.Plot}</p>
+            
         `;
 
-        movieList.appendChild(li);
-    });
-} */
+        const stars = getElement('.favourite')
+        console.log (stars)
+
+        const starss = document.querySelectorAll('.favourite');
+        console.log(starss)
+        handleFavoriteClick(starss)
+
+    } catch (error) {
+        console.error("Fel vid hämtning av filmdata:", error);
+    }
+}
