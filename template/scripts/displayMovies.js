@@ -46,7 +46,6 @@ export function displayMovies(movies) {
         <h3 class='movie-title'>${movie.Title}</h3>
         <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
         <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
-        <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
     `;
 
         cards.appendChild(li);

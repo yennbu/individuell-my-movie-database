@@ -1,5 +1,5 @@
 //Importerade funktioner
-import { fetchMovie } from "./modules/api.js";
+import { fetchMovieSearch } from "./modules/api.js";
 import { fetchAndDisplayTopMovies } from "./displayMovies.js";
 import { loadAndRenderTrailers } from "./modules/caroussel.js";
 import { getElement } from "./utils/domUtils.js";
@@ -37,7 +37,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/template/
 } else if (window.location.pathname === '/template/search.html') {
     console.log('search.html');
     let searchedMovies = localStorage.getItem("search");
-    let movies2 = await fetchMovie(searchedMovies);
+    let movies2 = await fetchMovieSearch(searchedMovies);
 
     displayMovies(movies2);
     addMovieItemEventListeners()
