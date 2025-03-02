@@ -1,87 +1,94 @@
-import { fetchMovie, fetchTopMovies } from "./modules/api.js";
+import { fetchTopMovies, fetchMovieInfo } from "./modules/api.js";
 import { shuffleArray } from "./shuffle.js";
 import { movieCard } from "./components/movieCard.js";
 import { getElement } from "./utils/domUtils.js";
-
+import { handleFavoriteClick } from "./eventHandlers.js";
 
 export async function fetchAndDisplayTopMovies() {
-        let movies = await fetchTopMovies();
-        shuffleArray(movies); // Blanda filmerna här
-        movies.splice(20)
-        movieCard(movies); // Skicka de blandade filmerna till displayMovies
-    }
-
-export async function fetchAndDisplaySearchedMovies() {
-    let searchedMovies = localStorage.getItem("search")
-
-    let movies2 = await fetchMovie(searchedMovies)
-
-    dispMovies(movies2)
+    let movies = await fetchTopMovies();
+    shuffleArray(movies); // Blanda filmerna här
+    movies.splice(20)
+    movieCard(movies); // Skicka de blandade filmerna till displayMovies
 }
 
-export function dispMovies(movies2) {
-    
+//Visar de sökta filmerna och de favoritmarkerade filmerna
+export function displayMovies(movies) {
+    console.log(movies)
+    const cards = getElement('#cardContainer');
 
-movies2.forEach(movie => {
-    //console.log("Filmobjekt:", movie); 
+    if (movies.length === 0) {
 
-    const cards = getElement('#cardContainerr');
+        if (window.location.pathname === '/template/favorites.html') {
+            cards.innerHTML = `
+                <div class="error-message">
+                    <p class="error-message">Inga favoriter sparade</p>
+                </div>`;
 
-    const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
-    li.classList.add('movie-item'); // Lägg till en CSS-klass
-    li.setAttribute('data-imdbid', movie.imdbID);
-    
-    li.innerHTML = `
+        } else {
+
+            //    const cardContainer = document.querySelector('.card-container');
+            cards.innerHTML = `
+                <div class="error-message">
+                    <p class="error-message">Ojdå! Inga filmer hittades.</p>
+                    <p class="error-message">Testa att söka igen.</p>
+                </div>`;
+        }
+    }
+
+    movies.forEach(movie => {
+        const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
+        li.classList.add('movie-item'); // Lägg till en CSS-klass
+        li.setAttribute('data-imdbid', movie.imdbID);
+
+        if (movie.Poster == "N/A") { movie.Poster = "res/icons/missing-poster.svg"; }
+
+        li.innerHTML = `
         <h3 class='movie-title'>${movie.Title}</h3>
         <img class='favourite' src="res/icons/star-outline.svg" alt=""> 
         <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
-        <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
     `;
 
-    //if (movie.poster == saknas){lägg till bilden ur mappen}
+        cards.appendChild(li);
 
-    cards.appendChild(li);
-});
 
-}
-
-export function addMovieItemEventListeners() {
-    const movieCards = document.querySelectorAll('.movie-item');
-    movieCards.forEach(card => {
-        card.addEventListener('click', testFunction);
     });
+
+    const favouriteBtn = document.querySelectorAll('.favourite');
+    handleFavoriteClick(favouriteBtn)
 }
 
-function testFunction() {
-    console.log('klick!');
-}
+//Visar kortet med mer information om varje film
+export async function displayMovieInfo() {
+    let imdb = localStorage.getItem('imdbID'); // Hämta IMDb-ID
 
+    if (!imdb) {
+        console.error("Inget IMDb-ID hittades i localStorage.");
+        return;
+    }
 
+    try {
+        let movie4 = await fetchMovieInfo(imdb); // Vänta på fetchMovieInfo
+        console.log(movie4);
 
-/*
-import { getElement } from "./utils/domUtils.js";
-export async function displayMovies(movies) {
-   // let movies = await fetchTopMovies();
-    if (movies.length === 0) return;
+        const movieInfo = getElement('.movie-information');
 
-    shuffleArray(movies); //Jag vill bryta ut den här, så att den här funktionen kan användas även för OMDB-API:t
-    movies.splice(20); 
+        movieInfo.setAttribute('data-imdbid', movie4.imdbID);
 
-    const movieList = getElement('.movie-list');
-    movieList.innerHTML = ''; // Rensa listan, så att den inte fylls på - Behövs den när .splice() används?
-
-    movies.forEach(movie => {
-        //console.log("Filmobjekt:", movie); 
-
-        const li = document.createElement('li'); //Skapa list-element som "tar emot" informationen från API:t
-        li.classList.add('movie-item'); // Lägg till en CSS-klass
-        
-        li.innerHTML = `
-            <h3 class='movie-title'>${movie.Title}</h3>
-            <img class='movie-poster' src="${movie.Poster}" alt="${movie.Title}"> 
-            <p><a class='trailer-link' href="${movie.Trailer_link}" target="_blank">Se trailer</a></p>
+        movieInfo.innerHTML = `
+            
+                <h3 class='movie-title'>${movie4.Title}</h3>
+                <img class='favouriteBtn' src="res/icons/star-outline.svg" alt=""> 
+                <img class='movie-information__poster' src="${movie4.Poster}" alt="${movie4.Title}"> 
+                <h4 class="actors">${movie4.Actors}</h4>
+                <h4 class="director">${movie4.Director}</h4>
+                <p class="plot">${movie4.Plot}</p>
+            
         `;
 
-        movieList.appendChild(li);
-    });
-} */
+        const favouriteBtn = document.querySelectorAll('.favouriteBtn');
+        handleFavoriteClick(favouriteBtn)
+
+    } catch (error) {
+        console.error("Fel vid hämtning av filmdata:", error);
+    }
+}
