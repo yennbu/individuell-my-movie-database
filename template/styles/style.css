@@ -189,14 +189,15 @@ p {
     color: white;
 }
 
-#cardContainerr {
+#cardContainer {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-around;
 }
 
-.favourite {
+.favourite,
+.favouriteBtn {
     width: 30px;
     position: absolute;
     top: 0;
@@ -208,7 +209,7 @@ p {
     margin-left: 10%;
     margin-right: 10%;
     margin-top: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 5rem;
     background-color: #1A1A1A;
     padding: 1rem;
     position: relative;
@@ -216,9 +217,11 @@ p {
     flex-direction: column;
 }
 
-.movie-information .movie-poster {
-    height: 200px;
-    width: auto;
+.movie-information__poster {
+    height: 250px;
+    width: fit-content;
+    margin-bottom: 0.5rem;
+    align-self: center;
 }
 
 .actors,
@@ -234,6 +237,9 @@ p {
 .error-message {
     color: #F5C518;
     font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @media screen and (min-width: 800px) {
@@ -249,6 +255,10 @@ p {
     .movie-information {
         margin-left: 20%;
         margin-right: 20%;
+    }
+
+    .movie-information__poster {
+        align-self: flex-start;
     }
 
     /**/
